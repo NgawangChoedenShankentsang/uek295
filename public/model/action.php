@@ -13,11 +13,23 @@
 		}
 		return true;
 	}
+	function create_product($sku, $active, $id_category, $name, $image, $description, $price, $stock) {
+		global $database;
+		$query = $database->query("INSERT INTO product(sku, active, id_category, name, image, description, price, stock) VALUES('$sku', '$active', '$id_category', '$name', '$image', '$description', '$price', '$stock')");
 
-	function delete_category($category_id) {
+		if (!$query) {
+           return false;
+		}
+		return true;
+	}
+	
+
+
+
+	function delete($value, $table, $key) {
 		global $database;
 
-		$query = $database->query("DELETE FROM category WHERE category_id = $category_id");
+		$query = $database->query("DELETE FROM $table WHERE $key = $value");
 		if (!$query) {
 			return "An error occurred while deleting the registration.";
 		}
@@ -29,10 +41,10 @@
 		}
 	}
 
-	function get_category($category_id) {
+	function get_data($value, $table, $key) {
 		global $database;
 
-		$query = $database->query("SELECT * FROM category WHERE category_id = $category_id");
+		$query = $database->query("SELECT * FROM $table WHERE $key = $value");
 
 		if (!$query) {
 			return "An error occurred while fetching the registration";
@@ -42,25 +54,30 @@
 		}
 		else {
             //die nächste Zeile einer Ergebnismenge als assoziatives Array
-			$category = $query->fetch_assoc();
-			return $category;
+			$result = $query->fetch_assoc();
+			return $result;
 		}
 	}
 
-	function update_category($category_id, $active, $name) {
+
+	function update($value, $table, $key, $sku, $active, $id_category, $name, $image, $description, $price, $stock) {
 		global $database;
-
-		$query = $database->query("UPDATE category SET active = $active, name = '$name' WHERE category_id = $category_id");
-
+		if($table === "product"){
+		$query = $database->query("UPDATE $table SET sku = '$sku', active = $active, id_category = $id_category, name = '$name', image = '$image', description = '$description', price = $price, stock = $stock WHERE $key = $value");
+		}
+		if($table === "category"){
+		$query = $database->query("UPDATE $table SET active = $active, name = '$name' WHERE $key = $value");
+		}
+		
 		if (!$query) {
 			return false;
 		}
 		return true;
 	}
 
-	function get_all_data(){
+	function get_all_data($table){
 		global $database;
-		$query = $database->query("SELECT * FROM category");
+		$query = $database->query("SELECT * FROM $table");
 		if (!$query) {
 			return "An error occurred while fetching the registrations.";
 		}

@@ -100,7 +100,7 @@ $app->get("/Read/Category/{category_id}", function (Request $request, Response $
         //$response->getBody()->write("Hello, world"); 
         $category_id = intval($args["category_id"]);
         //Get the entity.
-        $category = get_category($category_id);
+        $category = get_data($category_id, "category", "category_id");
 		//Get the entity.
 		if (!$category) {
             error("category_id: " . $category_id . " not found.", 404);
@@ -120,7 +120,7 @@ $app->get("/Read/Category/{category_id}", function (Request $request, Response $
 $app->delete("/Delete/Category/{category_id}", function (Request $request, Response $response, $args) { 
             require "controller/verify.php";
             $category_id = intval($args["category_id"]);
-            $category = delete_category($category_id);
+            $category = delete($category_id, "category", "category_id");
             if (!$category) {
                 //No entity found.
                 error("category_id: " . $category_id . " not found.", 404);
@@ -143,7 +143,7 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
         require "controller/verify.php";
         $category_id = $args["category_id"];
         //get the entity
-        $category = get_category($category_id);
+        $category = get_data($category_id, "category", "category_id");
         
         if (!$category) {
             //No entity found.
@@ -186,7 +186,7 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
         }    
         
         
-        if (update_category($category_id, $category["active"], $category["name"])){
+        if (update($category_id, "category", "category_id","",$category["active"], "", $category["name"], "", "", "", "")){
             success("category_id: " . $category_id . " is successfully updated", 200);
         }
         else {
@@ -195,10 +195,10 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
         return $response; 
     });
 
-$app->get("/All", function (Request $request, Response $response, $args) {
+$app->get("/All/Category", function (Request $request, Response $response, $args) {
         //Check the client's authentication.
         require "controller/verify.php";
-        $all_data = get_all_data();
+        $all_data = get_all_data("category");
 
         if (is_string($all_data)) {
 			//Error while fetching.

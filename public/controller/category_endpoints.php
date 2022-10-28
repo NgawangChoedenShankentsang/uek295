@@ -44,9 +44,11 @@ $app->post("/Authenticate", function (Request $request, Response $response, $arg
             $error = array("message" => "Invalid credentials");
             error("Invalid credential", 401);
         }
-        //Generate the access token and store it in the cookies.
+        
+        //Generate the access token and store it in the cookies of client side.
         $token = Token::create($username, $password, time() + 3600, "localhost");
         setcookie("token", $token);
+        
         //if the username and password is correct, return a 200.
         success("Successfully Authentify", 200);
         return $response; 
@@ -106,18 +108,18 @@ $app->post("/Create/Category", function (Request $request, Response $response, $
         $active = intval($request_data["active"]);
 		$name = strip_tags(addslashes($request_data["name"]));
 
-        //Make sure that the values are not empty and integer.
+        //Make sure that the name is not empty, integer and the measure the length.
         if (is_int($name)){
             error("The name field must be string", 400);
         }
 		if (empty($name)) {
 			error("The name field must not be empty.", 400);
 		}
-
-        //Limit the length of the name.
 		if (strlen($name) > 500) {
 			error("The name is too long. Please enter less than or equal to 500 characters.", 400);
 		}
+
+        //Limit the length of the active.
         if ($active < -128 || $active > 127) {
 			error("The active must between -128 and 127.", 400);
 		} 
@@ -132,7 +134,7 @@ $app->post("/Create/Category", function (Request $request, Response $response, $
             success("Data are successfully created", 201);
         }
 
-        //if return is false than, return 500.
+        //if error during while saving, return 500.
 		else {
             error("An error occured while saving the category data.", 500);
         }
@@ -167,6 +169,7 @@ $app->get("/Read/Category/{category_id}", function (Request $request, Response $
         $category_id = intval($args["category_id"]);
 
         //Get the entity.
+        //Sending parameter (value, table name , key).
         $category = get_data($category_id, "category", "category_id");
 
 		if (!$category) {
@@ -214,6 +217,7 @@ $app->delete("/Delete/Category/{category_id}", function (Request $request, Respo
             $category_id = intval($args["category_id"]);
 
             //Delete the entity.
+            //sending in parameter (value, table name, key).
             $category = delete($category_id, "category", "category_id");
 
             if (!$category) {
@@ -274,6 +278,7 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
         $category_id = $args["category_id"];
 
         //get the entity.
+        //sending in parameter (value, table name, key).
         $category = get_data($category_id, "category", "category_id");
         
         if (!$category) {
@@ -291,7 +296,7 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
 		//Parse the JSON string.
 		$request_data = json_decode($request_body_string, true);
 
-        //put the updated information into the fetched entity.
+        //making sure tha active is set
         if (isset($request_data["active"])) {
             //making sure that active is numeric.
             if (!is_numeric($request_data["active"])){
@@ -314,6 +319,8 @@ $app->put("/Update/Category/{category_id}", function (Request $request, Response
             //assigning into associative array.
             $category["active"] = $active;
         }
+
+        //making sure name is set
         if (isset($request_data["name"])) {
             
             //sanitize the name

@@ -32,6 +32,7 @@ $app->get("/Read/Product/{product_id}", function (Request $request, Response $re
         $product_id = intval($args["product_id"]);
 
         //Get the entity.
+        //sending in parameter (value, table name, key).
         $product = get_data($product_id, "product", "product_id");
 		if (!$product) {
             //No entity found.
@@ -141,6 +142,7 @@ $app->post("/Create/Product", function (Request $request, Response $response, $a
 
     //get entity.
     //it will search into table category, whethere the id_category value existed in category_id.
+    //sending in parameter (value, table name, key).
     $serach_pk = get_data($fk, "category", "category_id");
     if(!$serach_pk){
         //not entity found
@@ -160,7 +162,7 @@ $app->post("/Create/Product", function (Request $request, Response $response, $a
     $price = floatval($request_data["price"]);
     $stock = intval($request_data["stock"]);
 
-    //if sku is empty, reurn 400.
+    //if sku is empty, return 400.
     if (empty($sku)) {
         error("The sku field must not be empty.", 400);
     }
@@ -245,10 +247,11 @@ $app->post("/Create/Product", function (Request $request, Response $response, $a
  *             example="1"
  *         )
  *     ),
+ * 
  *     @OA\Response(response="404", description="product_id not found"),
  *     @OA\Response(response="500", description="Internal server error"),
  *     @OA\Response(response="401", description="Invalid credentials/ Unauthorized"),
- *     @OA\Response(response="200", description="OK: executed))
+ *     @OA\Response(response="200", description="OK: executed/Successfully authenticated"))
  * ) 
 */
 $app->delete("/Delete/Product/{product_id}", function (Request $request, Response $response, $args) { 
@@ -259,6 +262,7 @@ $app->delete("/Delete/Product/{product_id}", function (Request $request, Respons
     $product_id = intval($args["product_id"]);
 
     //delete the entity.
+    //Sending parameter (value, table name , key).
     $product = delete($product_id, "product", "product_id");
 
     if (!$product) {
@@ -307,7 +311,7 @@ $app->delete("/Delete/Product/{product_id}", function (Request $request, Respons
  *     @OA\Response(response="404", description="product_id not found"),
  *     @OA\Response(response="500", description="Internal server error"),
  *     @OA\Response(response="400", description="Bad Request/ Unknow key values"),
- *     @OA\Response(response="200", description="Erklärung der Antwort mit Status 200"))
+ *     @OA\Response(response="200", description="OK: executed/Successfully authenticated"))
  * )
 */
 $app->put("/Update/Product/{product_id}", function (Request $request, Response $response, $args) { 
@@ -394,6 +398,8 @@ $app->put("/Update/Product/{product_id}", function (Request $request, Response $
         $id_category = intval($request_data["id_category"]);
 
         //get entity: it will search into table category, whethere the id_category value existed in category_id.
+        //Sending parameter (value, table name , key).
+        
         $serach_pk = get_data($id_category, "category", "category_id");
         if(!$serach_pk){
             //no entity found.
@@ -545,6 +551,7 @@ $app->put("/Update/Product/{product_id}", function (Request $request, Response $
  *     ),
  *     @OA\Response(response="200", description="Successfully authenticated"),
  *     @OA\Response(response="401", description="Unauthorized"),
+ *     @OA\Response(response="200", description="Successfully authenticated"),
  *     @OA\Response(response="500", description="Internal server error"))
 */
 $app->get("/All/Product", function (Request $request, Response $response, $args) {
